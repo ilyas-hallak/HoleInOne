@@ -33,16 +33,9 @@ int window_width_ = 1024, window_height_ = 768;
 using namespace std;
 
 vector<Obj *>obstacles;
+Sphere *sph;
 
 static double alpha_ = 90, beta_ = 20;
-double moveX = 0, moveY = 0, moveZ;
-double mouseX = 0, mouseY = 0, mousePressedX = 0, mousePressedY = 0;
-
-static double sphX = 5.0, sphZ = 0.0, cubeX = 0, cubeY = 0;
-
-Vec3 currSph = Vec3(0.0, 0.0, 0.0);
-
-int sphereStatus = SPHERE_STOPPED;
 
 int selectedIndex = -1;
 
@@ -66,8 +59,6 @@ void move(GLFWwindow *w, int key, int scancode, int action, int mods) {
         }
     }
     
-    cout << "selectedIndex " << selectedIndex << endl;
-    
     if(selectedIndex != -1) {
         // set new obstacle to picked
         if(obstacles.size() >= selectedIndex) {
@@ -90,22 +81,16 @@ void move(GLFWwindow *w, int key, int scancode, int action, int mods) {
             beta_ += 20;
             break;
         case GLFW_KEY_A:
-            moveX -= 1;
             break;
         case GLFW_KEY_D:
-            moveX += 1;
             break;
         case GLFW_KEY_W:
-            moveY += 1;
             break;
         case GLFW_KEY_S:
-            moveY -= 1;
             break;
         case GLFW_KEY_O:
-            moveZ -= 1;
             break;
         case GLFW_KEY_I:
-            moveZ += 1;
             break;
         default: break;
     }
@@ -113,17 +98,12 @@ void move(GLFWwindow *w, int key, int scancode, int action, int mods) {
 
 void mouseMove(GLFWwindow *w, double x, double y) {
     // cout << endl << "X " << x << " Y " << y;
-    mouseX = x;
-    mouseY = y;
 }
 
 void mouseButtonC(GLFWwindow *w, int button, int action, int mods) {
     if(action == GLFW_PRESS) {
-        mousePressedX = mouseX;
-        mousePressedY = mouseY;
     } else if (action == GLFW_RELEASE) {
-        sphereStatus = SPHERE_MOVING;
-        currSph = Vec3(-(mousePressedX - mouseX) / 200 ,0.0, -(mousePressedY - mouseY) / 200);
+        sph->setVelocity(Vec3(-0.08, 0, -0.08));
     }
 }
 
@@ -222,66 +202,37 @@ void Draw() {
     //  beta_ += .1;
     
     
-	// Vec3 *clickPoint = new Vec3(window_x, 0.0, window_y);
-    
-	// currSph = Vec3( 5.0, 0.0, 0.0);
-    float radiusSpH = 0.2f;
-    
-    int window_y = (mouseY - window_height_/2 - sphZ) * 1;
-	int window_x = (mouseX - window_width_/2 - sphX) * 1;
-    
-	// cout << "X " << window_x  << " Y" << window_y << endl;
-    
-    /*
-	double x2 = clickPoint->p[0];
-	double x1 = sph->p[0];
-    
-	double y2 = clickPoint->p[2];
-	double y1 = sph->p[2];
-    
-	double abstand = sqrt(pow(x1 - x2, 2)  + pow(y1 - y2, 2));
-    
-	cout << "abstand " << abstand << endl;
-    
-    
-    if (sphX + radiusSpH < cubeX+6) {
-        Vec3 normalVektor = Vec3(1, 0 ,0);
-        currSph = -(2 * (currSph * normalVektor) * normalVektor - currSph);
-        cout << "1" << endl;
-        // links
-    } else if (sphX - radiusSpH < cubeX-7) {
-        Vec3 normalVektor = Vec3(-1, 0 ,0);
-        currSph = -(2 * (currSph * normalVektor) * normalVektor - currSph);
-        
-        // oben
-        cout << "2" << endl;
-    }
-    
-    if (sphZ + radiusSpH > cubeY+5) {
-        Vec3 normalVektor = Vec3(0, 0 ,1);
-        currSph = -(2 * (currSph * normalVektor) * normalVektor - currSph);
-        cout << "3" << endl;
-        // unten
-    } else if (sphZ - radiusSpH < cubeY-5) {
-        Vec3 normalVektor = Vec3(0, 0 ,-1);
-        currSph = -(2 * (currSph * normalVektor) * normalVektor - currSph);
-                cout << "4" << endl;
-    }
-    
-    cout << "curr x: " << currSph.p[0] << " y: " << currSph.p[2] << endl;
-    
-    SetMaterialColor(0, 12, 7, 1);
 
-    DrawSphere(currSph, radiusSpH);
-    */
-    
     // hindernisse
     SetMaterialColor(0, 15, 0, 1);
     
     for(std::vector<int>::size_type i = 0; i != obstacles.size(); i++) {
         obstacles[i]->draw();
+        // TODO obstacles[i]->checkCollison(sph);
     }
+    sph->draw();
     
+    // kolssion mit Tisch
+    Vec3 normalVektor;
+    if(sph->getV().p[0] + sph->getRadius() > 7 || sph->getV().p[0] + sph->getRadius() < -7 || sph->getV().p[2] + sph->getRadius() > 5 || sph->getV().p[2] + sph->getRadius() < -5) {
+        if (sph->getV().p[0] + sph->getRadius()  < 5 && sph->getV().p[0] + sph->getRadius() > 0) {
+            cout << "1" << endl;
+            normalVektor = Vec3(0, 0, 1);
+        } else if (sph->getV().p[0] + sph->getRadius()  > -5 && sph->getV().p[0] + sph->getRadius() < 0) {
+                        cout << "2" << endl;
+            normalVektor = Vec3(0, 0, -1);
+        } else if(sph->getV().p[2] + sph->getRadius()  < 7  && sph->getV().p[2] + sph->getRadius() > 0) {
+                        cout << "3" << endl;
+            normalVektor = Vec3(1, 0 ,0);
+        } else if(sph->getV().p[2] + sph->getRadius()  > -7 && sph->getV().p[2] + sph->getRadius() < 0) {
+                        cout << "4" << endl;
+            normalVektor = Vec3(-1, 0, 0);
+        }
+        
+        Vec3 tmpV = -(2 * (sph->getVelocity() * normalVektor) * normalVektor - sph->getVelocity());
+        sph->setVelocity(tmpV);
+        
+    }
 }
 
 int main(int argc, const char * argv[])
@@ -308,16 +259,18 @@ int main(int argc, const char * argv[])
     obstacles.push_back(new Table());
     obstacles.push_back(new Pyramid(Vec3(1.0, 0.0, 1.0)));
     obstacles.push_back(new Pyramid(Vec3(3.0, 0.0, 2.0)));
-    //obstacles.push_back(new Quader(Vec3(-2.0, 0.0, -3.0)));
+    obstacles.push_back(new Quader(Vec3(-2.0, 0.0, -3.0)));
     obstacles.push_back(new Sphere(Vec3(3.0, 0.0, 3.0), 0.5));
     obstacles.push_back(new Wall());
+    
+    sph = new Sphere(Vec3(5.0, 0.0, 3.0), 0.1);
+    sph->setVelocity(Vec3(0, 0, 0));
     
     glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, &move);
     glfwSetCursorPosCallback(window, &mouseMove);
     
     glfwSetMouseButtonCallback(window, &mouseButtonC);
-    
     
     while(!glfwWindowShouldClose(window)) {
         // switch on lighting (or you don't see anything)

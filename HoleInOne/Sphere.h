@@ -19,6 +19,7 @@ public:
     Sphere(Vec3 vec,double r);
     void draw();
     void DrawSphere(const Vec3& ctr, double r);
+    float getRadius();
 };
 
 #endif /* defined(__HoleInOne__Sphere__) */

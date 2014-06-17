@@ -38,3 +38,19 @@ void Obj::move(int direction) {
             break;
     }
 }
+
+Vec3 Obj::getV() {
+    return this->v;
+}
+
+void Obj::setV(Vec3 vec) {
+    this->v = vec;
+}
+
+Vec3 Obj::getVelocity() {
+    return this->velocity;
+}
+
+void Obj::setVelocity(Vec3 vec) {
+    this->velocity = vec;
+}

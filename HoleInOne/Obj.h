@@ -20,12 +20,18 @@ protected:
     int status;
     int pickedStatus = PICKED_NO;
     Vec3 v;
+    Vec3 velocity;
 public:
     Obj();
     virtual void draw() = 0;
     void pick(int newStatus);
     int getPickStatus();
     void move(int direction);
+    Vec3 getV();
+    void setV(Vec3 vec);
+    Vec3 getVelocity();
+    void setVelocity(Vec3 vec);
+
 };
 
 #endif /* defined(__HoleInOne__Obj__) */

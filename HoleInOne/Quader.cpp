@@ -15,9 +15,8 @@ Quader::Quader(Vec3 vec) {
 
 void Quader::draw() {
     
-    
+    glPushMatrix();
     glTranslated(v.p[0], v.p[1], v.p[2]);
-    std::cout << "pickedstatus q " << this->getPickStatus() << std::endl;
     
     if(this->getPickStatus() == PICKED_YES) {
         SetMaterialColor(0, 5, 5, 5);
@@ -47,9 +46,7 @@ void Quader::draw() {
     glVertex3f(-1.0f, 1.0f, 1.0f);
     glVertex3f(1.0f, 1.0f, 1.0f);
     glEnd();
-    
-    glPopMatrix();
-  
+      
     // links
     if(this->getPickStatus() == PICKED_NO) {
         SetMaterialColor(2, 12, 0, 0);
@@ -98,5 +95,7 @@ void Quader::draw() {
     glVertex3f(-1.0f, -1.0f, -1.0f);
     glVertex3f(1.0f, -1.0f, -1.0f);
     glEnd();
+    
+    glPopMatrix();
     
 }

@@ -61,7 +61,13 @@ void Sphere::draw() {
     } else {
         SetMaterialColor(0, 1, 2, 3);
     }
+    setV(this->getV() + this->getVelocity());
+    
     this->DrawSphere(v, radius);
     glPopMatrix();
+}
+
+float Sphere::getRadius() {
+    return this->radius;
 }
 
